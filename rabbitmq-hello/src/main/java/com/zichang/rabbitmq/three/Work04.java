@@ -37,8 +37,8 @@ public class Work04 {
             channel.basicAck(message.getEnvelope().getDeliveryTag(), false);
         };
         //设置手动应答
-        boolean ask = false;
-        channel.basicConsume(TASK_QUEUE_NAME, ask, deliverCallback, consumerTag -> {
+        boolean autoAsk = false;
+        channel.basicConsume(TASK_QUEUE_NAME, autoAsk, deliverCallback, consumerTag -> {
             System.out.println(consumerTag + "消息取消回调函数回调");
         });
     }
