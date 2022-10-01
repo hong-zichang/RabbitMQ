@@ -23,6 +23,14 @@ public class Work04 {
         Channel channel = RabbitMQUtils.getChannel();
         System.out.println("C2线程应答比较慢......");
 
+        //开启发布确认
+        channel.confirmSelect();
+
+        //设置不公平分发 1为不公平分发 >1为预取值
+        //int prefetchCount = 1;
+        int prefetchCount = 5;
+        channel.basicQos(prefetchCount);
+
         //接收消息的回调函数
         DeliverCallback deliverCallback = (consumerTag, message) -> {
             //模拟复杂业务，睡一秒
@@ -37,6 +45,13 @@ public class Work04 {
             channel.basicAck(message.getEnvelope().getDeliveryTag(), false);
         };
         //设置手动应答
+        /**
+         * 获取消息
+         * 1.队列名称
+         * 2.是否自动应答
+         * 3.接收消息的回调
+         * 4.取消消息接收的回调
+         */
         boolean autoAsk = false;
         channel.basicConsume(TASK_QUEUE_NAME, autoAsk, deliverCallback, consumerTag -> {
             System.out.println(consumerTag + "消息取消回调函数回调");

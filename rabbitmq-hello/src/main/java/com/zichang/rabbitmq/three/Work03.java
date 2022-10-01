@@ -12,6 +12,7 @@ import com.zichang.rabbitmq.utils.SleepUtil;
 
 /**
  * 消费者消费消息，消费者手动应答，未应答重新返回队列
+ * 设置为不公平分发，basicQos(1) 默认为0 轮询分发
  */
 public class Work03 {
 
@@ -23,6 +24,11 @@ public class Work03 {
         //利用工具类得到信道
         Channel channel = RabbitMQUtils.getChannel();
         System.out.println("C1线程应答比较快......");
+
+        //设置不公平分发 1为不公平分发 >1为预取值
+        //int prefetchCount = 1;
+        int prefetchCount = 2;
+        channel.basicQos(prefetchCount);
 
         //接收消息的回调函数
         DeliverCallback deliverCallback = (consumerTag, message) -> {
