@@ -17,6 +17,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 死信实战 消费者C1
+ * 3种情况会被拒绝
+ * 1.消息过期，TTL
+ * 2.超过队列最大长度
+ * 3.消息被拒绝
  */
 public class Consumer01 {
     //正常交换机名称
@@ -42,6 +46,8 @@ public class Consumer01 {
         arguments.put("x-dead-letter-exchange", DEAD_EXCHANGE);
         //设置正常队列的信息routing_key
         arguments.put("x-dead-letter-routing-key", "lisi");
+        //设置正常队列的最大长度
+        //arguments.put("x-max-length", 6);
         channel.queueDeclare(NORMAL_QUEUE, false, false, false, arguments);
 
         //****************************************************************************************//
@@ -55,7 +61,20 @@ public class Consumer01 {
         //接收消息
         //接收消息的回调函数
         DeliverCallback deliverCallback = (consumerTag, message) -> {
-            System.out.println("Consumer01接收到消息：" + new String(message.getBody(), "UTF-8"));
+            String messages = new String(message.getBody(), "UTF-8");
+            if (messages.equals("info5")) {
+                /**
+                 * 拒绝消息
+                 * 1.消息的标识
+                 * 2.是否放回队列
+                 */
+                channel.basicReject(message.getEnvelope().getDeliveryTag(), false);
+                System.out.println("Consumer01接收到消息：" + messages + " ,此消息是被拒绝的");
+            }else {
+                channel.basicAck(message.getEnvelope().getDeliveryTag(), false);
+                System.out.println("Consumer01接收到消息：" + messages);
+            }
+
         };
         //取消消息的回调函数
         CancelCallback cancelCallback = consumerTag -> {

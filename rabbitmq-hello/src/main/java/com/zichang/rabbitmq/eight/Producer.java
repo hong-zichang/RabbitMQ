@@ -20,11 +20,11 @@ public class Producer {
     public static void main(String[] args) throws Exception{
         Channel channel = RabbitMQUtils.getChannel();
         //死信消息 设置TTL时间 过期时间为10s 10000ms
-        AMQP.BasicProperties prop = new AMQP.BasicProperties()
-                .builder().expiration("10000").build();
+        //AMQP.BasicProperties prop = new AMQP.BasicProperties()
+                //.builder().expiration("10000").build();
         for (int i = 1; i < 11; i++) {
             String message = "info" + i;
-            channel.basicPublish(NORMAL_EXCHANGE, "zhangsan", prop, message.getBytes(StandardCharsets.UTF_8));
+            channel.basicPublish(NORMAL_EXCHANGE, "zhangsan", null, message.getBytes(StandardCharsets.UTF_8));
         }
     }
 }

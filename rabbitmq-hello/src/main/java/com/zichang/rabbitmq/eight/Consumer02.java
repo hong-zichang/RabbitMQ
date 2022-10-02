@@ -34,6 +34,6 @@ public class Consumer02 {
         CancelCallback cancelCallback = consumerTag -> {
             System.out.println("消费者取消接收消息回调函数触发。。。。" + consumerTag);
         };
-        channel.basicConsume(DEAD_QUEUE, false, deliverCallback, cancelCallback);
+        channel.basicConsume(DEAD_QUEUE, true, deliverCallback, cancelCallback);
     }
 }
