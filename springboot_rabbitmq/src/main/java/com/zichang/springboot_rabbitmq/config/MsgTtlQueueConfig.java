@@ -14,11 +14,14 @@ import java.util.Map;
  * create-date: 2022/10/3 22:31
  **/
 
+/**
+ * 可变ttl的队列声明配置类
+ */
 @Component
 public class MsgTtlQueueConfig {
-
+    //正常队列C的名称
     public static final String NORMAL_QUEUE_C = "QC";
-
+    //死信交换机的名称
     public static final String dead_exchange = "Y";
 
     @Bean("queueC")

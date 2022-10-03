@@ -5,6 +5,7 @@ package com.zichang.springboot_rabbitmq.controller;
  * create-date: 2022/10/3 17:20
  **/
 
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +34,25 @@ public class SendMsgController {
     }
 
     @GetMapping("/sendExpirationMsg/{message}/{ttlTime}")
+    @ApiParam("可定制延迟时间的消息")
     public void sendExpirationMsg(@PathVariable("message") String msg,
                                   @PathVariable("ttlTime") Long ttl){
-        log.info("当前时间：{}，发送一条消息给两个TTL队列：{},延时为：{}ms", new Date().toString(), msg, ttl);
+        log.info("当前时间：{}，发送一条消息给TTL队列：{},延时为：{}ms", new Date().toString(), msg, ttl);
         rabbitTemplate.convertAndSend("X", "XC", "消息来着ttl为" + ttl + "ms的队列:" + msg,
                 correlationData ->{
                     correlationData.getMessageProperties().setExpiration(String.valueOf(ttl));
+                    return correlationData;
+                });
+    }
+
+    //基于插件的延迟队列
+    @GetMapping("sendDelayMsg/{message}/{delayTime}")
+    public void sendMsg(@PathVariable("message") String msg,
+                        @PathVariable("delayTime") Integer delayTime){
+        log.info("当前时间：{}，发送一条消息给基于插件的延迟消息队列：{},延时为：{}ms", new Date().toString(), msg, delayTime);
+        rabbitTemplate.convertAndSend("delayed.exchange", "delayed.routingkey", "消息来着基于延迟队列插件延迟时间为" + delayTime + "ms的队列:" + msg,
+                correlationData ->{
+                    correlationData.getMessageProperties().setDelay(delayTime);
                     return correlationData;
                 });
     }
