@@ -4,3 +4,5 @@ spring:
     port: 5672 # 15672是后台端口
     username: admin
     password: 123
+    publisher-confirm-type: correlated
+    publisher-returns: true
